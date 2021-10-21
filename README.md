@@ -1,1 +1,1 @@
-# Social-distance-detector
+# Social distance detector
