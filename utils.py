@@ -1,124 +1,131 @@
 import cv2
 import numpy as np
+import math
 from math import ceil
+import matplotlib as mpl
+mpl.use('Agg')
+
 import matplotlib.pyplot as plt
-
-
-def cal_reproject_error(imgpoints, objpoints, rvecs, tvecs, mtx, dist):  #calculate the reprojection error
-    mean_error = 0
-    for i in range(len(objpoints)):
-        imgpoints2, _ = cv2.projectPoints(objpoints[i], rvecs[i], tvecs[i], mtx, dist)
-        error = cv2.norm(imgpoints[i], imgpoints2, cv2.NORM_L2)/len(imgpoints2)
-        mean_error += error
-    #print( "total error: {}".format(mean_error/len(objpoints)))
-    return mean_error/len(objpoints)
-
-"""
-21
-34
-"""
+from shapely import geometry
 
 def parse_imgpoints(imgpoints):     #sub_function used by dimension statistic
     # print("before:",np.array(imgpoints).shape)
     pts = np.array(imgpoints).squeeze(axis=None)
     # print("after:",pts.shape)
-    a, b, _ = pts.shape
+    if len(imgpoints) == 1:
+        a = 1
+        b, _ = pts.shape
+    else:
+        a, b, _ = pts.shape
     pts = np.resize(pts,(a*b,2)).tolist()    #resize to the format we want
     # print(np.array(pts))
     # print(type(pts))
     return pts
 
-def dim_statistic(imgpoints,img_width,img_height):  #count the points with respect to four dimension
-    half_width,half_height = img_height/2, img_height/2
-    pts = parse_imgpoints(imgpoints)
-    dim_list = np.zeros(shape=4, dtype=np.int8).tolist()   #divide into four dimension
-    for item in pts:
-        x,y = item
-        if x > half_width and y > half_height:   #dim4
-            dim_list[3] += 1
-        elif x < half_width and y > half_height: #dim3
-            dim_list[2] += 1
-        elif x < half_width and y < half_height: #dim2
-            dim_list[1] += 1
-        elif x > half_width and y < half_height: #dim1
-            dim_list[0] += 1
-    _str = '左上:{left_top}, 右上:{right_top}, 左下:{left_bottom}, 右下:{right_bottom}'.format(left_top=dim_list[1], right_top=dim_list[0],left_bottom=dim_list[2],right_bottom=dim_list[3])
-    print(_str) 
-    return 
+"""
+#use parameters to calculate reprojection error
+def cal_reproject_error(imgpoints, objpoints, rvecs, tvecs, mtx, dist):
+    sum_error = 0
+    for i in range(len(objpoints)):
+        imgpoints2, _ = cv2.projectPoints(objpoints[i], rvecs[i], tvecs[i], mtx, dist)
+        error = cv2.norm(imgpoints[i], imgpoints2, cv2.NORM_L2)/len(imgpoints2)
+        sum_error += error
+    #print( "reprojection error: {}".format(sum_error/len(objpoints)))
+    reprojection_error = sum_error/len(objpoints)
+    return reprojection_error
+"""
 
-def dim_stat_xy(imgpoints, img_width, img_height, div_num=10):    #project the points into x and y axis and do the further counting. Counting the distribution among x and y axis
-    pts = parse_imgpoints(imgpoints)
-    x_list, y_list = np.zeros(shape=div_num, dtype=np.int8).tolist(), np.zeros(shape=div_num, dtype=np.int8).tolist()
-    width_per_div, height_per_div = ceil(img_width/div_num), ceil(img_height/div_num)
-    for item in pts:
-        x, y = item
-        x_list[int(x/width_per_div)] += 1
-        y_list[int(y/height_per_div)] += 1  
-    print("x axis(left to right):{}".format(str(x_list)))
-    print("y axis(top to bottom): {}".format(str(y_list)))
-    return
+#use frames to calculate every parameters
+def calculate_parameters(objpoints, imgpoints, img_size, cur_count, total, eliminate=False):
+    #reprojection_error = None
+    packed_tmp = ret_tmp, mtx_tmp, dist_tmp, rvecs_tmp, tvecs_tmp = cv2.calibrateCamera(objpoints[:], imgpoints[:], 
+                                                                                        img_size, None, None)
+    all_error_tmp=[]
+    for i in range(len(objpoints)):
+        imgpoints2, _ = cv2.projectPoints(objpoints[i], rvecs_tmp[i], tvecs_tmp[i], mtx_tmp, dist_tmp)
+        error = cv2.norm(imgpoints[i], imgpoints2, cv2.NORM_L2)/len(imgpoints2)
+        all_error_tmp.append(error) # all_error: 由每張frame各自的error所組成的array
+
+    mean_error_tmp = sum(all_error_tmp)/len(all_error_tmp)
+
+    return imgpoints[:], objpoints[:], packed_tmp, ret_tmp, mtx_tmp, dist_tmp, rvecs_tmp, tvecs_tmp, all_error_tmp, mean_error_tmp
 
 
-def sliding_window_calibrate(objpoints, imgpoints, img_size, cur_count, total, eliminate=False): #if the newest data helps better performance, then discard the first. On the contary
-    packed_tmp = ret_tmp, mtx_tmp, dist_tmp, rvecs_tmp, tvecs_tmp = cv2.calibrateCamera(objpoints[:], imgpoints[:], #using 1~last as new dataset, eliminate the first entry
-                                                                                         img_size, None, None)  
-    packed_ori = ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints[:len(objpoints)-1], imgpoints[:len(imgpoints)-1], #using 0~last-1
-                                                                     img_size, None, None)   
-    ori = cal_reproject_error(imgpoints[:len(imgpoints)-1], objpoints[:len(objpoints)-1], rvecs, tvecs, mtx, dist)   #calculate the loss of original dataset
-    slided = cal_reproject_error(imgpoints[:], objpoints[:], rvecs_tmp, tvecs_tmp, mtx_tmp, dist_tmp)                #calculate the loss of original dataset + current frame
+def _pixel(_wid0th, _width, _hei0ght, _height):
+    spacing = 2
+    pixel_width = math.floor(((_width-_wid0th)+spacing/2)/spacing) 
+    pixel_height = math.floor(((_height-_hei0ght)+spacing/2)/spacing)
+    pixel=[]
+    for m in range(pixel_width):
+        for n in range(pixel_height):
+            pixel.append([(m+0.5)*spacing+_wid0th, (n+0.5)*spacing+_hei0ght])
+    #print(np.shape(pixel), len(pixel))  #(3072, 2) 3072
+    return pixel
 
-    if ori < slided:
-        print('new data doesn\'t help, eliminate it')
-        return packed_ori + (imgpoints[:len(imgpoints)-1], objpoints[:len(objpoints)-1], ori)   #also return the 'new' dataset that will be used later
-    else:
-        print("new data helps, add it to dataset")
-        return packed_tmp + (imgpoints[:], objpoints[:], slided)    #also return the 'new' dataset that will be used later
-    #return ret, mtx, dist, rvecs, tvecs
+def check_pixel(pixel, x_left, x_right, y_top, y_bot):
+    counter = 0
+    for i in range(len(pixel)):
+        if (pixel[i][0] > x_left) and (pixel[i][0] < x_right) and (pixel[i][1] > y_top) and (pixel[i][1] <y_bot):
+            counter += 1
+    return counter
 
-def calculate_the_worst(objpoints, imgpoints, img_size, cur_count, total, eliminate=False):
+def pick_corner_find_uncovered_pixel(p_imgpoints, counter, t, pixel):
+    all_corner = []
+    save_discard = []
+    for i in range(counter - t):
+        all_corner.append( [p_imgpoints[0+49*i], p_imgpoints[6+49*i], p_imgpoints[48+49*i], p_imgpoints[42+49*i]] )
+    poly = all_corner[-1]
+    line = geometry.LineString(poly)
+    polygon = geometry.Polygon(line)
+    for k in range(len(pixel)):
+        point= geometry.Point(pixel[k])
+        if polygon.contains(point) == True:
+            save_discard.append(pixel[k])
+            pixel[k] = -1
+    new_pixel = []
+    for n in range(len(pixel)):
+        if pixel[n] != -1:
+            new_pixel.append(pixel[n])
+            
+    return new_pixel, save_discard      #這裡的new_pixel為還沒被任何一張覆蓋的pixel, save_discard為這張照片所覆蓋的pixel
 
-    err = None
-    if len(objpoints)>10 and len(imgpoints)>10:
-        packed_tmp = ret_tmp, mtx_tmp, dist_tmp, rvecs_tmp, tvecs_tmp = cv2.calibrateCamera(objpoints[:], imgpoints[:], #using 1~last as new dataset, eliminate the first entry
-                                                                                            img_size, None, None)
-        all_error=[]
-        for i in range(len(objpoints)):
-            imgpoints2, _ = cv2.projectPoints(objpoints[i], rvecs_tmp[i], tvecs_tmp[i], mtx_tmp, dist_tmp)
-            error = cv2.norm(imgpoints[i], imgpoints2, cv2.NORM_L2)/len(imgpoints2)
-            all_error.append(error)
+def show_block(_width, _height):
+    side_num1 = 4                                      #長邊(預設x)切成幾塊
+    block_length1 = max(_width, _height)//side_num1 
+    side_num2 = min(_width, _height)//block_length1+1  #短邊(預設y)切成幾塊
+    block_length2 = min(_width, _height)//side_num2
+    if _width < _height:
+        hold_num = side_num1
+        hold_length = block_length1
+        side_num1 = side_num2
+        block_length1 = block_length2
+        side_num2 = hold_num
+        block_length2 = hold_length
 
-        err = sum(all_error)/len(all_error)
-        objpoints.pop(all_error.index(max(all_error)))
-        imgpoints.pop(all_error.index(max(all_error)))
+    block=[]
+    for k in range(side_num2):
+        for l in range(side_num1):
+            if l == side_num1-1 and k == side_num2-1:
+                block.append([l*block_length1, _width, k*block_length2, _height])
+            elif l == side_num1-1:
+                block.append([l*block_length1, _width, k*block_length2, (k+1)*block_length2])
+            elif k == side_num2-1:
+                block.append([l*block_length1, (l+1)*block_length1, k*block_length2, _height])
+            else:
+                block.append([l*block_length1, (l+1)*block_length1, k*block_length2, (k+1)*block_length2]) #append([x左,x右,y上,y下])
+    #print('block[x左,x右,y上,y下]: ', block)    #由左至右由上至下
+    return side_num1, side_num2, block_length1, block_length2, block
 
-    return err,imgpoints[:],objpoints[:]
-   
+
 def scatter_hist(imgpoints, _width, _height, inverse=True): #draw the scatter graph using imgpoints
     pt = parse_imgpoints(imgpoints)
     x = []
     y = []
     values = []
-    
-    index_before = 0
-    index_after = 49
-    center_point = []
-
     for item in pt:
         _x, _y = item
         x.append(_x)
         y.append(_y)
-    
-    for i in range(int(len(pt)/49)):
-        center_point.append([np.mean(np.array(pt[index_before:index_after])[:,0]),np.mean(np.array(pt[index_before:index_after])[:,1])])
-        index_before+=49
-        index_after+=49
-
-    print("資料中心點座標:(%.2f,%.2f)" %(np.mean(np.array(center_point)[:,0]),np.mean(np.array(center_point)[:,1])))
-    print("資料標準差:(%.2f,%.2f)" %(np.std(np.array(center_point)[:,0]),np.std(np.array(center_point)[:,1])))
-    print("資料變異數:(%.2f,%.2f)" %(np.var(np.array(center_point)[:,0]),np.var(np.array(center_point)[:,1])))
-
-        #我做的
-        # values.append((_x**2)+(_y**2)**0.5)
 
     left, width = 0.1, 0.65
     bottom, height = 0.1, 0.65
@@ -130,7 +137,6 @@ def scatter_hist(imgpoints, _width, _height, inverse=True): #draw the scatter gr
 
     # start with a square Figure
     fig = plt.figure(figsize=(8, 8))
-
     ax = fig.add_axes(rect_scatter,xlim=(0, width),ylim=(0, height))     #axe is a sub-area in figure.
     ax_histx = fig.add_axes(rect_histx, sharex=ax)
     ax_histy = fig.add_axes(rect_histy, sharey=ax)
@@ -153,5 +159,11 @@ def scatter_hist(imgpoints, _width, _height, inverse=True): #draw the scatter gr
     bins = np.arange(-lim, lim + binwidth, binwidth)
     ax_histx.hist(x, bins=bins)
     ax_histy.hist(y, bins=bins, orientation='horizontal')
-    
     plt.show()
+
+def draw_block(frame, block, block_cover):
+    for i in range(len(block)):
+        if block_cover[i] < 0.3:
+            cv2.rectangle(frame, (block[i][0], block[i][3]), (block[i][1], block[i][2]), color = (0, 0, 255), thickness = 1)
+        else:
+            cv2.rectangle(frame, (block[i][0], block[i][3]), (block[i][1], block[i][2]), color = (0, 255, 0), thickness = 2)
