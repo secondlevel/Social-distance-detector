@@ -32,16 +32,20 @@ def capture(frame_count=20):        #frame_counter=> how many frames in total
     while True:         #using infinite loop with timer to do the realtime capture and calibrate
         cur_time = time()
         ret, frame = cap.read()
+
         if setting == True and cur_time-start_time < 2.9:
             text = "{}".format(int(round( 3-(cur_time-start_time),0)))
             cv2.putText(frame, text, (285, 270), cv2.FONT_HERSHEY_SIMPLEX, 3, (0, 255, 255), 2, cv2.LINE_AA)
             # print("block_coverage:",block_coverage)
             draw_block(frame, block, block_coverage)
+
         if setting == False:
             cv2.putText(frame, "setting", (260, 80), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 255), 1, cv2.LINE_AA)
         cv2.imshow('frame', frame)
+
         if cv2.waitKey(1) & 0xFF == ord('q'): # 若按下 q 鍵則離開迴圈
             break
+
         if cur_time-start_time > 3:
             if ret: #capture success
                 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -70,7 +74,7 @@ def capture(frame_count=20):        #frame_counter=> how many frames in total
                         start_time=cur_time
                         continue
                     counter += 1
-                    print("capture success and chessboard is founded, {}/{}".format(counter,frame_count))
+                    print("capture success and chessboard is founded, {}/{}".format(counter, frame_count))
                     objpoints.append(objp)
                     imgpoints.append(corners)
                     #cv2.imwrite('./{}/output{}.jpg'.format(file_name,counter), gray)
@@ -103,6 +107,7 @@ def capture(frame_count=20):        #frame_counter=> how many frames in total
                                 print("delete")
                                 pic_del += 1
                         print("error for each frame (deleted):{}".format(all_error_tmp))
+
                     if counter >10:
                         if all_error_tmp[-1] >= error_avg + 2*error_std:
                             imgpoints.pop(-1)
@@ -120,6 +125,7 @@ def capture(frame_count=20):        #frame_counter=> how many frames in total
                         count_pixel = check_pixel(pixel, block[i][0], block[i][1], block[i][2], block[i][3])
                         block_coverage[i] = round((initial_pixel[i]-count_pixel)/initial_pixel[i], 3)
                         #print("block {} : {}     coverage : {}/{} = {}".format(i, block[i], initial_pixel[i]-count_pixel, initial_pixel[i], block_coverage[i]))
+                    
                     pixel_num = len(pixel)
                     coverage_tmp = (init_pixel_number - pixel_num)/init_pixel_number
 
@@ -128,17 +134,20 @@ def capture(frame_count=20):        #frame_counter=> how many frames in total
                         if block_coverage[i] > 0.3:
                             qualify += 1
                     print("block>0.3:", qualify, "/", len(block)) 
+
                     if counter >= 10:
                         if qualify == len(block_coverage):
                             print("\n\n end \n\n")
                             cap.release()       #release the camera
                             cv2.destroyAllWindows()
                             break
+
                     if counter == frame_count:  #meet the number of frames defined in the begining
                         print("\n\n end \n\n")
                         cap.release()           #release the camera
                         cv2.destroyAllWindows()
                         break
+                    
                 else:
                     print("No chessboard is found in this frame")
             start_time=cur_time
