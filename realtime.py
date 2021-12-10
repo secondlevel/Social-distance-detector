@@ -17,7 +17,7 @@ def capture(frame_count=20):        #frame_counter=> how many frames in total
     corner_x = 7   # pattern is 7*7
     corner_y = 7
     objp = np.zeros((corner_x*corner_y, 3), np.float32)
-    objp[:, :2] = np.mgrid[0:corner_x, 0:corner_y].T.reshape(-1, 2)#[0 0 0],[1 0 0],[2 0 0]........[6 6 0]
+    objp[:, :2] = np.mgrid[0:corner_x, 0:corner_y].T.reshape(-1, 2) #[0 0 0],[1 0 0],[2 0 0]........[6 6 0]
     setting = False
     # Arrays to store object points and image points from all the images.
     objpoints = [] # 3d points in real world space
@@ -32,6 +32,7 @@ def capture(frame_count=20):        #frame_counter=> how many frames in total
     while True:         #using infinite loop with timer to do the realtime capture and calibrate
         cur_time = time()
         ret, frame = cap.read()
+        frame_save = frame
 
         if setting == True and cur_time-start_time < 2.9:
             text = "{}".format(int(round( 3-(cur_time-start_time),0)))
@@ -77,6 +78,7 @@ def capture(frame_count=20):        #frame_counter=> how many frames in total
                     print("capture success and chessboard is founded, {}/{}".format(counter, frame_count))
                     objpoints.append(objp)
                     imgpoints.append(corners)
+                    cv2.imwrite("image/"+str(counter)+".jpg", frame_save)
                     #cv2.imwrite('./{}/output{}.jpg'.format(file_name,counter), gray)
                     #above part for finding chessboard, append points, save picture
 

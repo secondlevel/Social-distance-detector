@@ -44,4 +44,3 @@ dst = cv2.undistort(img, mtx, dist, None, newcameramtx)
 x, y, w, h = roi
 #dst = dst[y:y+h, x:x+w]
 cv2.imwrite('calib_result({}).jpg'.format(file_name1), dst)
-

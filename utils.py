@@ -63,6 +63,7 @@ def _pixel(_wid0th, _width, _hei0ght, _height):
     return pixel
 
 def check_pixel(pixel, x_left, x_right, y_top, y_bot):
+    
     counter = 0
     for i in range(len(pixel)):
         if (pixel[i][0] > x_left) and (pixel[i][0] < x_right) and (pixel[i][1] > y_top) and (pixel[i][1] <y_bot):
@@ -70,7 +71,7 @@ def check_pixel(pixel, x_left, x_right, y_top, y_bot):
     return counter
 
 def pick_corner_find_uncovered_pixel(p_imgpoints, counter, t, pixel):
-    
+
     all_corner = []
     save_discard = []
     for i in range(counter - t):
