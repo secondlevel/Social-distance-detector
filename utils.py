@@ -9,18 +9,16 @@ import matplotlib.pyplot as plt
 from shapely import geometry
 
 def parse_imgpoints(imgpoints):     #sub_function used by dimension statistic
+    
     # print("before:",np.array(imgpoints).shape)
     pts = np.array(imgpoints).squeeze(axis=None)
     # print("after:",pts.shape)
+
     if len(imgpoints) == 1:
-        a = 1
-        b, _ = pts.shape
+        return pts.tolist()
     else:
         a, b, _ = pts.shape
-    pts = np.resize(pts,(a*b,2)).tolist()    #resize to the format we want
-    # print(np.array(pts))
-    # print(type(pts))
-    return pts
+        return np.resize(pts,(a*b,2)).tolist() #resize to the format we want
 
 """
 #use parameters to calculate reprojection error
@@ -50,16 +48,18 @@ def calculate_parameters(objpoints, imgpoints, img_size, cur_count, total, elimi
 
     return imgpoints[:], objpoints[:], packed_tmp, ret_tmp, mtx_tmp, dist_tmp, rvecs_tmp, tvecs_tmp, all_error_tmp, mean_error_tmp
 
-
 def _pixel(_wid0th, _width, _hei0ght, _height):
-    spacing = 2
-    pixel_width = math.floor(((_width-_wid0th)+spacing/2)/spacing) 
-    pixel_height = math.floor(((_height-_hei0ght)+spacing/2)/spacing)
+
     pixel=[]
+    spacing = 2
+    pixel_width = math.floor(((_width-_wid0th-2)/spacing)+1)
+    pixel_height = math.floor(((_height-_hei0ght-2)/spacing)+1)
+    
+    # (1, 1) ----> first point, (width-1, height-1) ----> last point
     for m in range(pixel_width):
         for n in range(pixel_height):
-            pixel.append([(m+0.5)*spacing+_wid0th, (n+0.5)*spacing+_hei0ght])
-    #print(np.shape(pixel), len(pixel))  #(3072, 2) 3072
+            pixel.append([1+m*spacing, 1+n*spacing])
+            
     return pixel
 
 def check_pixel(pixel, x_left, x_right, y_top, y_bot):
@@ -70,6 +70,7 @@ def check_pixel(pixel, x_left, x_right, y_top, y_bot):
     return counter
 
 def pick_corner_find_uncovered_pixel(p_imgpoints, counter, t, pixel):
+    
     all_corner = []
     save_discard = []
     for i in range(counter - t):
@@ -90,32 +91,23 @@ def pick_corner_find_uncovered_pixel(p_imgpoints, counter, t, pixel):
     return new_pixel, save_discard      #這裡的new_pixel為還沒被任何一張覆蓋的pixel, save_discard為這張照片所覆蓋的pixel
 
 def show_block(_width, _height):
+
     side_num1 = 4                                      #長邊(預設x)切成幾塊
     block_length1 = max(_width, _height)//side_num1 
-    side_num2 = min(_width, _height)//block_length1+1  #短邊(預設y)切成幾塊
+    side_num2 = (min(_width, _height)//block_length1)+1  #短邊(預設y)切成幾塊
     block_length2 = min(_width, _height)//side_num2
+
     if _width < _height:
-        hold_num = side_num1
-        hold_length = block_length1
-        side_num1 = side_num2
-        block_length1 = block_length2
-        side_num2 = hold_num
-        block_length2 = hold_length
+        side_num1, side_num2 = side_num2, side_num1
+        block_length1, block_length2 = block_length2, block_length1  
 
     block=[]
     for k in range(side_num2):
         for l in range(side_num1):
-            if l == side_num1-1 and k == side_num2-1:
-                block.append([l*block_length1, _width, k*block_length2, _height])
-            elif l == side_num1-1:
-                block.append([l*block_length1, _width, k*block_length2, (k+1)*block_length2])
-            elif k == side_num2-1:
-                block.append([l*block_length1, (l+1)*block_length1, k*block_length2, _height])
-            else:
-                block.append([l*block_length1, (l+1)*block_length1, k*block_length2, (k+1)*block_length2]) #append([x左,x右,y上,y下])
+            block.append([l*block_length1, (l+1)*block_length1, k*block_length2, (k+1)*block_length2]) #append([x左,x右,y上,y下])
+    
     #print('block[x左,x右,y上,y下]: ', block)    #由左至右由上至下
     return side_num1, side_num2, block_length1, block_length2, block
-
 
 def scatter_hist(imgpoints, _width, _height, inverse=True): #draw the scatter graph using imgpoints
     pt = parse_imgpoints(imgpoints)
