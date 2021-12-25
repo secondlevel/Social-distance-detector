@@ -78,8 +78,8 @@ def capture(frame_count=20):        #frame_counter=> how many frames in total
                     print("capture success and chessboard is founded, {}/{}".format(counter, frame_count))
                     objpoints.append(objp)
                     imgpoints.append(corners)
-                    cv2.imwrite("image/"+str(counter)+".jpg", frame_save)
-                    #cv2.imwrite('./{}/output{}.jpg'.format(file_name,counter), gray)
+                    # cv2.imwrite("image/"+str(counter)+".jpg", frame_save)
+                    # cv2.imwrite('./{}/output{}.jpg'.format(file_name,counter), gray)
                     #above part for finding chessboard, append points, save picture
 
                     imgpoints, objpoints, packed_tmp, ret_tmp, mtx_tmp, dist_tmp, rvecs_tmp, tvecs_tmp, all_error_tmp, mean_error_tmp \
@@ -159,11 +159,14 @@ def capture(frame_count=20):        #frame_counter=> how many frames in total
     fixed_param = {'img_points':imgpoints, 'ret':ret_tmp, 'mtx':mtx_tmp, 'dist':dist_tmp, 'rvecs':rvecs_tmp, 'tvecs':tvecs_tmp, \
         'error':all_error_tmp, 'mean_error':mean_error_tmp, 'block_coverage':block_coverage, 'coverage':coverage_tmp}
     #print("fixed_param:\n",fixed_param)
-
+    # print(type(ret_tmp))
+    # print(type(mtx_tmp))
+    # print(type(dist_tmp))
+    # print(type(rvecs_tmp))
+    # print(type(tvecs_tmp))
     file = open('./{}/param.pickle'.format(file_name),'wb')
     pickle.dump(fixed_param,file)   #save parameters
     file.close()
-
 
 if __name__ == '__main__':
   capture()
