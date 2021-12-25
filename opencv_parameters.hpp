@@ -1,0 +1,81 @@
+#define  CV_CALIB_CB_ADAPTIVE_THRESH   1
+
+#define  CV_CALIB_CB_FAST_CHECK   8
+
+#define  CV_CALIB_CB_FILTER_QUADS   4
+
+#define  CV_CALIB_CB_NORMALIZE_IMAGE   2
+
+#define  CV_CALIB_FIX_ASPECT_RATIO   2
+
+#define  CV_CALIB_FIX_FOCAL_LENGTH   16
+ 
+#define  CV_CALIB_FIX_INTRINSIC   256
+ 
+#define  CV_CALIB_FIX_K1   32
+ 
+#define  CV_CALIB_FIX_K2   64
+ 
+#define  CV_CALIB_FIX_K3   128
+ 
+#define  CV_CALIB_FIX_K4   2048
+ 
+#define  CV_CALIB_FIX_K5   4096
+ 
+#define  CV_CALIB_FIX_K6   8192
+ 
+#define  CV_CALIB_FIX_PRINCIPAL_POINT   4
+ 
+#define  CV_CALIB_FIX_S1_S2_S3_S4   65536
+ 
+#define  CV_CALIB_FIX_TANGENT_DIST   2097152
+ 
+#define  CV_CALIB_FIX_TAUX_TAUY   524288
+ 
+#define  CV_CALIB_NINTRINSIC   18
+ 
+#define  CV_CALIB_RATIONAL_MODEL   16384
+ 
+#define  CV_CALIB_SAME_FOCAL_LENGTH   512
+ 
+#define  CV_CALIB_THIN_PRISM_MODEL   32768
+ 
+#define  CV_CALIB_TILTED_MODEL   262144
+ 
+#define  CV_CALIB_USE_INTRINSIC_GUESS   1
+ 
+#define  CV_CALIB_ZERO_DISPARITY   1024
+ 
+#define  CV_CALIB_ZERO_TANGENT_DIST   8
+ 
+#define  CV_FM_7POINT   1
+ 
+#define  CV_FM_8POINT   2
+ 
+#define  CV_FM_LMEDS   CV_LMEDS
+ 
+#define  CV_FM_LMEDS_ONLY   CV_LMEDS
+ 
+#define  CV_FM_RANSAC   CV_RANSAC
+ 
+#define  CV_FM_RANSAC_ONLY   CV_RANSAC
+ 
+#define  CV_LMEDS   4
+ 
+#define  CV_RANSAC   8
+ 
+#define  CV_STEREO_BM_BASIC   0
+ 
+#define  CV_STEREO_BM_FISH_EYE   1
+ 
+#define  CV_STEREO_BM_NARROW   2
+ 
+#define  CV_STEREO_BM_NORMALIZED_RESPONSE   0
+ 
+#define  CV_STEREO_BM_XSOBEL   1
+
+#define  CV_TERMCRIT_ITER 1
+
+#define CV_TERMCRIT_NUMBER CV_TERMCRIT_ITER
+
+#define  CV_TERMCRIT_EPS 2
