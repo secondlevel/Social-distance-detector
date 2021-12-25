@@ -94,18 +94,59 @@ class TestCameraCalibrate:
         assert(np.sum(c_result<0)==0)
         assert(np.sum(c_result>255)==0)
         assert((np.sum(result==False)/(np.sum(result==False)+np.sum(result==True)))*100 > 50)
-
-    # def test_exist_calibrate_directory(self):
-    #     self.calibrator.GenerateCalibrateMatrix("image")
     
-    # def test_same_calibrate_matrix(self):
+    def test_calibrate_performance(self):
+        setup_c='''
+from build.camera_calibrate_utils import CameraCalibrate
+        '''
 
-    #     h,w = self.img.shape[:2]
-    #     mtx = self.calibrator.GetCameraMatrix()
-    #     dist = self.calibrator.GetDistCoeffs()
-    #     newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w,h), 1, (w,h))
-    #     python_result = cv2.undistort(self.img, mtx, dist, None, newcameramtx)
+        c_camera_calibrate_code='''
+calibrator = CameraCalibrate(7,7) 
+calibrator.GenerateCalibrateMatrix('image')
+calibrator.ImageUndistort('image/1.jpg')
+'''
+        
+        setup_python='''
+import cv2
+import numpy as np
+import os
+        '''
 
-    #     self.calibrator.ImageUndistort("image/1.jpg")
-    #     c_result = self.calibrator.GetUndistortImage()
-    #     # assert((False in (python_result == c_result))==False)
+        python_camera_calibrate_code='''
+objpoints = [] 
+imgpoints = [] 
+corner_x, corner_y = 7, 7
+
+objp = np.zeros((corner_x*corner_y, 3), np.float32)
+objp[:, :2] = np.mgrid[0:corner_x, 0:corner_y].T.reshape(-1, 2)
+
+for image_index in range(1,21):
+    image_path = os.path.join("image", str(image_index)+".jpg")
+
+    image = cv2.imread(image_path)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    ret, corners = cv2.findChessboardCorners(gray, (corner_x, corner_y), None)
+
+    imgpoints.append(corners)
+    objpoints.append(objp)
+
+img_size = (image.shape[1], image.shape[0])
+
+ret_tmp, mtx_tmp, dist_tmp, rvecs_tmp, tvecs_tmp = cv2.calibrateCamera(objpoints, imgpoints, img_size, None, None)
+
+image = cv2.imread("image/2.jpg")
+h, w = image.shape[:2]
+newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx_tmp, dist_tmp, (w,h), 1, (w,h))
+dst = cv2.undistort(image, mtx_tmp, dist_tmp, None, newcameramtx)
+'''
+
+        c_cameracalibrate = timeit.Timer(stmt=c_camera_calibrate_code, setup=setup_c)
+        min_c_cameracalibrate = min(c_cameracalibrate.repeat(repeat=10, number=1))
+
+        python_cameracalibrate = timeit.Timer(stmt=python_camera_calibrate_code, setup=setup_python)
+        min_python_cameracalibrate = min(python_cameracalibrate.repeat(repeat=10, number=1))
+
+        with open("./performance/performance_cameracalibrate.txt", "w") as fin:
+            fin.writelines(f"c++ cameracalibrate pybind11 to python utils takes {min_c_cameracalibrate} seconds\n")
+            fin.writelines(f"python cameracalibrate takes {min_python_cameracalibrate} seconds\n")
+            fin.writelines("c++ cameracalibrate speed-up over python cameracalibrate %g x\n" %(min_python_cameracalibrate/min_c_cameracalibrate))
