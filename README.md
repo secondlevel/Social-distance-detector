@@ -106,7 +106,7 @@ calibrator.ShowCalibrateResult()
 calibrator.ShowImage("result_window", undistorted_image_array1)
 ```
 
-### additional function
+### Additional function
 
 
 **rgb2gray_c()** - Read the array of image and return the array of gray images. There using the py::array_t to implement the method.
