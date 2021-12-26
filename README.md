@@ -161,21 +161,31 @@ This project will be completed by executing the following steps:
 
 ### Run System Method
 
-step1. clean the unnecessary directory or file in the directory.
+step1. Prepare the directory that contain a sequence of image (ex: "image" directory).
+
+
+step2. clean up all the unnecessary file or directory.
+
 ```bash=
 make clean
 ```
 
-step2. build the system.
+step3. build the system.
+
 ```bash=
 make
 ```
-step3. test the system.
+
+step4. test the system.
+
 ```bash=
 make test
 ```
 
 ### Testing Content
+
+In the project, It's using the opencv function to test my project result. Testing content are as following.
+
 
 
 ## Schedule
