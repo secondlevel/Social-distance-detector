@@ -161,17 +161,22 @@ This project will be completed by executing the following steps:
 
 ### Run System Method
 
+step1. clean the unnecessary directory or file in the directory.
 ```bash=
 make clean
 ```
 
+step2. build the system.
 ```bash=
 make
 ```
-
+step3. test the system.
 ```bash=
 make test
 ```
+
+### Testing Content
+
 
 ## Schedule
 
