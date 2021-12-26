@@ -182,7 +182,7 @@ make test
 
 ### Testing Content
 
-In the project, It's using the opencv function to test my project result. Testing content are as following.
+In the project, It's using the opencv function to test my project result. Testing content or performance are as following.
 
 - #### Convert BGR to GRAY in different numbers of image.
 - First column->using method
