@@ -12,11 +12,11 @@ In recent years, there are more and more deep learning methods to obtain the coo
 
 <p float="center">
   
-  <img src="md_image/camera_calibration_normal.png" width="250" title="Normal image" hspace="35" />
+  <img src="md_image/camera_calibration_normal.png" width="250" title="Normal image" hspace="30" />
   
   <img src="md_image/camera_calibration_positive.png" width="280" title="Positive radial image" hspace="30" />
   
-  <img src="md_image/camera_calibration_negative.png" width="250" title="Negative radial image" hspace="40" /> 
+  <img src="md_image/camera_calibration_negative.png" width="240" title="Negative radial image" hspace="31" /> 
   
 </p>
 
@@ -55,57 +55,55 @@ Check the size of the chessboard you want to use and declare the constructor.
 
 - calibrator = CameraCalibrate(7,7)
 
-GetImageNumpy() - Read an image name and return the image numpy array.
+**GetImageNumpy()** - Read an image name and return the image numpy array.
 
 - image_array = calibrator.GetImageNumpy("image/1.jpg")
 
-GenerateCalibrateMatrix() - Read a directory name(stored some image that named xxx.jpg) and generate the rotation vector, translation vector, intrinsic matrix, and distorted coefficient,.etc. 
+**GenerateCalibrateMatrix()** - Read a directory name(stored some image that named xxx.jpg) and generate the rotation vector, translation vector, intrinsic matrix, and distorted coefficient,.etc. 
 
 - calibrator.GenerateCalibrateMatrix("image")
 
-ImageUndistort() - Read an image name or image array and return the undistorted image numpy array.
+**ImageUndistort()** - Read an image name or image array and return the undistorted image numpy array.
 
 - undistorted_image_array1 = calibrator.ImageUndistort("image/1.jpg")  
 - undistorted_image_array2 = calibrator.ImageUndistort(image_array)
 
-SaveUndistortedImage() - Read the name of the image you want to save. It will save the image array to the system, such as our undistorted_image_array1 or undistorted_image_array2.
+**SaveUndistortedImage()** - Read the name of the image you want to save. It will save the image array to the system, such as our undistorted_image_array1 or undistorted_image_array2.
 
 - calibrator.SaveUndistortedImage("result.jpg")
 
-SaveImage() - Read the save name and the image numpy array. It will save this array to the system.
+**SaveImage()** - Read the save name and the image numpy array. It will save this array to the system.
 
 - calibrator.SaveImage("myresult.jpg", undistorted_image_array1)    
 
-ShowCalibrateResult() - It will display both the last read image and last undistorted image, as shown in the following.
+**ShowCalibrateResult()** - It will display both the last read image and last undistorted image, as shown in the following.
 
 - calibrator.ShowCalibrateResult()  
 
 <p float="center">
   
-  - original image  
-  <img src="md_image/origin.jpg" width="250" title="original image" hspace="30" />
+  <img src="md_image/origin.jpg" width="400" title="original image" hspace="30" />
   
-  - undistorted image   
-  <img src="md_image/result.jpg" width="260" title="undistorted result" hspace="30" />
+  <img src="md_image/result.jpg" width="400" title="undistorted result" hspace="30" />
   
 </p>
 
-ShowImage() - Read the window name and image numpy array you want to show.
+**ShowImage()** - Read the window name and image numpy array you want to show.
 
 - calibrator.ShowImage("result_window", undistorted_image_array1) 
 
 ### additional function
 
 
-rgb2gray_c() - Read the array of image and return the array of gray images. There using the py::array_t to implement the method.
+**rgb2gray_c()** - Read the array of image and return the array of gray images. There using the py::array_t to implement the method.
 
 - gray_image_array = rgb2gray_c(image_array)
 
-rgb2gray2_c() - Read the array of image and return the array of gray images. There using the bufferinfo to get the value of py::array_t.
+**rgb2gray2_c()** - Read the array of image and return the array of gray images. There using the bufferinfo to get the value of py::array_t.
 
 - gray_image_array = rgb2gray2_c(image_array)
 
-rgb2gray2_multithread_c() - Read the array of image and return the array of gray images. There using the bufferinfo to get the value py::array_t, and through the multithread to implement the method.
+**rgb2gray2_multithread_c()** - Read the array of image and return the array of gray images. There using the bufferinfo to get the value py::array_t, and through the multithread to implement the method.
 
 - gray_image_array = rgb2gray2_multithread_c(image_array)
 
@@ -130,15 +128,13 @@ rgb2gray2_multithread_c() - Read the array of image and return the array of gray
 
 ### Project Step
 
-Analysis report will be created using FPDF.
-
 This project will be completed by executing the following steps:
 
-- [ ] Complete the camera calibration function.
+- [X] Complete the camera calibration function.
 
-- [ ] Python binding.
+- [X] Python binding.
 
-- [ ] Final testing.
+- [X] Final testing.
 
 ## Schedule
 
