@@ -163,7 +163,7 @@ This project will be completed by executing the following steps:
 
 step1. Prepare the directory that contain a sequence of image 
 
-ex: [image directory](https://github.com/secondlevel/Social-distance-detector/tree/main/image directory)
+ex: [image directory](https://github.com/secondlevel/Social-distance-detector/tree/main/image)
 
 step2. clean up all the unnecessary file or directory.
 
