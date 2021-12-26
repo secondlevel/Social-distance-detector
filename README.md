@@ -208,7 +208,7 @@ make test
 
 In the project, It's using the opencv function to test my project result. Testing content or performance are as following.
 
-- #### Convert BGR to GRAY in different numbers of image.
+#### Convert BGR to GRAY in different numbers of image.
 - First column->using method
 - First rows->number of image
 - Unit->seconds
