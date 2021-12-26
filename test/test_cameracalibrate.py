@@ -5,30 +5,28 @@ import timeit
 import numpy as np
 from build.camera_calibrate_utils import CameraCalibrate
 
-def init_parameters():
-    '''
-    .def("GenerateCalibrateMatrix", &CameraCalibrate::GenerateCalibrateMatrix)
-    .def("ImageUndistort", py::overload_cast<std::string>(&CameraCalibrate::ImageUndistort))
-    .def("ImageUndistort", py::overload_cast<cv::Mat>(&CameraCalibrate::ImageUndistort))
-    .def("SaveUndistortedImage", &CameraCalibrate::SaveUndistortedImage)
-    .def("ShowCalibrateResult", &CameraCalibrate::ShowCalibrateResult)
-    .def("GetCameraMatrix", &CameraCalibrate::GetCameraMatrix)
-    .def("GetDistCoeffs", &CameraCalibrate::GetDistCoeffs)
-    .def("GetRotationVector", &CameraCalibrate::GetRotationVector)
-    .def("GetTranslationVector", &CameraCalibrate::GetTranslationVector)
-    .def("GetImageNumpy", &CameraCalibrate::GetImageNumpy)
-    .def("GetUndistortImage", &CameraCalibrate::GetUndistortImage)
-    '''
-    return None
+''' function introduction
+.def("GenerateCalibrateMatrix", &CameraCalibrate::GenerateCalibrateMatrix)
+.def("ImageUndistort", py::overload_cast<std::string>(&CameraCalibrate::ImageUndistort))
+.def("ImageUndistort", py::overload_cast<cv::Mat>(&CameraCalibrate::ImageUndistort))
+.def("SaveUndistortedImage", &CameraCalibrate::SaveUndistortedImage)
+.def("ShowCalibrateResult", &CameraCalibrate::ShowCalibrateResult)
+.def("GetCameraMatrix", &CameraCalibrate::GetCameraMatrix)
+.def("GetDistCoeffs", &CameraCalibrate::GetDistCoeffs)
+.def("GetRotationVector", &CameraCalibrate::GetRotationVector)
+.def("GetTranslationVector", &CameraCalibrate::GetTranslationVector)
+.def("GetImageNumpy", &CameraCalibrate::GetImageNumpy)
+.def("GetUndistortImage", &CameraCalibrate::GetUndistortImage)
+'''
 
 class TestCameraCalibrate:
     img = cv2.imread("image/1.jpg")
     calibrator = CameraCalibrate(7,7)
 
-    def test_undistort_image_error(self):
-        with pytest.raises(RuntimeError) as excinfo:
-            self.calibrator.GetUndistortImage()
-        assert "Please check that you have execute the ImageUndistort function." in str(excinfo.value)
+    # def test_undistort_image_error(self):
+    #     with pytest.raises(RuntimeError) as excinfo:
+    #         self.calibrator.GetUndistortImage()
+    #     assert "Please check that you have execute the ImageUndistort function." in str(excinfo.value)
 
     def test_GetImageNumpy_error(self):
         with pytest.raises(RuntimeError) as excinfo:
@@ -80,8 +78,8 @@ class TestCameraCalibrate:
     
     def test_calibrate_matrix(self):
         self.calibrator.GenerateCalibrateMatrix("image")
-        self.calibrator.ImageUndistort("image/1.jpg")
-        c_result = self.calibrator.GetUndistortImage()
+        c_result = self.calibrator.ImageUndistort("image/1.jpg")
+        # c_result = self.calibrator.GetUndistortImage()
 
         h,w = self.img.shape[:2]
         mtx = self.calibrator.GetCameraMatrix()
@@ -95,58 +93,108 @@ class TestCameraCalibrate:
         assert(np.sum(c_result>255)==0)
         assert((np.sum(result==False)/(np.sum(result==False)+np.sum(result==True)))*100 > 50)
     
-    def test_calibrate_performance(self):
-        setup_c='''
-from build.camera_calibrate_utils import CameraCalibrate
-        '''
+#     def test_calibrate_performance(self):
+#         setup_c='''
+# from build.camera_calibrate_utils import CameraCalibrate
+# calibrator = CameraCalibrate(7,7)
+# '''
 
-        c_camera_calibrate_code='''
-calibrator = CameraCalibrate(7,7) 
-calibrator.GenerateCalibrateMatrix('image')
-calibrator.ImageUndistort('image/1.jpg')
-'''
+#         c_camera_calibrate_code=''' 
+# calibrator.GenerateCalibrateMatrix('image')
+# calibrator.ImageUndistort('image/1.jpg')
+# '''
         
-        setup_python='''
-import cv2
-import numpy as np
-import os
-        '''
+#         setup_python='''
+# import cv2
+# import numpy as np
+# import os
+#         '''
 
-        python_camera_calibrate_code='''
-objpoints = [] 
-imgpoints = [] 
-corner_x, corner_y = 7, 7
+#         python_camera_calibrate_code='''
+# objpoints = [] 
+# imgpoints = [] 
+# corner_x, corner_y = 7, 7
 
-objp = np.zeros((corner_x*corner_y, 3), np.float32)
-objp[:, :2] = np.mgrid[0:corner_x, 0:corner_y].T.reshape(-1, 2)
+# objp = np.zeros((corner_x*corner_y, 3), np.float32)
+# objp[:, :2] = np.mgrid[0:corner_x, 0:corner_y].T.reshape(-1, 2)
 
-for image_index in range(1,21):
-    image_path = os.path.join("image", str(image_index)+".jpg")
+# for image_index in range(1,21):
+#     image_path = os.path.join("image", str(image_index)+".jpg")
 
-    image = cv2.imread(image_path)
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    ret, corners = cv2.findChessboardCorners(gray, (corner_x, corner_y), None)
+#     image = cv2.imread(image_path)
+#     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+#     ret, corners = cv2.findChessboardCorners(gray, (corner_x, corner_y), None)
 
-    imgpoints.append(corners)
-    objpoints.append(objp)
+#     imgpoints.append(corners)
+#     objpoints.append(objp)
 
-img_size = (image.shape[1], image.shape[0])
+# img_size = (image.shape[1], image.shape[0])
 
-ret_tmp, mtx_tmp, dist_tmp, rvecs_tmp, tvecs_tmp = cv2.calibrateCamera(objpoints, imgpoints, img_size, None, None)
+# ret_tmp, mtx_tmp, dist_tmp, rvecs_tmp, tvecs_tmp = cv2.calibrateCamera(objpoints, imgpoints, img_size, None, None)
 
-image = cv2.imread("image/2.jpg")
-h, w = image.shape[:2]
-newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx_tmp, dist_tmp, (w,h), 1, (w,h))
-dst = cv2.undistort(image, mtx_tmp, dist_tmp, None, newcameramtx)
-'''
+# image = cv2.imread("image/2.jpg")
+# h, w = image.shape[:2]
+# newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx_tmp, dist_tmp, (w,h), 1, (w,h))
+# dst = cv2.undistort(image, mtx_tmp, dist_tmp, None, newcameramtx)
+# '''
 
-        c_cameracalibrate = timeit.Timer(stmt=c_camera_calibrate_code, setup=setup_c)
-        min_c_cameracalibrate = min(c_cameracalibrate.repeat(repeat=10, number=1))
+#         c_cameracalibrate = timeit.Timer(stmt=c_camera_calibrate_code, setup=setup_c)
+#         min_c_cameracalibrate = min(c_cameracalibrate.repeat(repeat=10, number=1))
 
-        python_cameracalibrate = timeit.Timer(stmt=python_camera_calibrate_code, setup=setup_python)
-        min_python_cameracalibrate = min(python_cameracalibrate.repeat(repeat=10, number=1))
+#         python_cameracalibrate = timeit.Timer(stmt=python_camera_calibrate_code, setup=setup_python)
+#         min_python_cameracalibrate = min(python_cameracalibrate.repeat(repeat=10, number=1))
 
-        with open("./performance/performance_cameracalibrate.txt", "w") as fin:
-            fin.writelines(f"c++ cameracalibrate pybind11 to python utils takes {min_c_cameracalibrate} seconds\n")
-            fin.writelines(f"python cameracalibrate takes {min_python_cameracalibrate} seconds\n")
-            fin.writelines("c++ cameracalibrate speed-up over python cameracalibrate %g x\n" %(min_python_cameracalibrate/min_c_cameracalibrate))
+#         with open("./performance/performance_cameracalibrate.txt", "w") as fin:
+#             fin.writelines(f"c++ cameracalibrate pybind11 to python utils takes {min_c_cameracalibrate} seconds\n")
+#             fin.writelines(f"python cameracalibrate takes {min_python_cameracalibrate} seconds\n")
+#             fin.writelines("c++ cameracalibrate speed-up over python cameracalibrate %g x\n" %(min_python_cameracalibrate/min_c_cameracalibrate))
+
+#     def test_generate_calibrate_matrix_performance(self):
+#         setup_c='''
+# from build.camera_calibrate_utils import CameraCalibrate
+# calibrator = CameraCalibrate(7,7) 
+# '''
+
+#         c_camera_calibrate_code='''
+# calibrator.GenerateCalibrateMatrix('image')
+# '''
+        
+#         setup_python='''
+# import cv2
+# import numpy as np
+# import os
+# '''
+
+#         python_camera_calibrate_code='''
+# objpoints = [] 
+# imgpoints = [] 
+# corner_x, corner_y = 7, 7
+
+# objp = np.zeros((corner_x*corner_y, 3), np.float32)
+# objp[:, :2] = np.mgrid[0:corner_x, 0:corner_y].T.reshape(-1, 2)
+
+# for image_index in range(1,21):
+#     image_path = os.path.join("image", str(image_index)+".jpg")
+
+#     image = cv2.imread(image_path)
+#     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+#     ret, corners = cv2.findChessboardCorners(gray, (corner_x, corner_y), None)
+
+#     imgpoints.append(corners)
+#     objpoints.append(objp)
+
+# img_size = (image.shape[1], image.shape[0])
+
+# ret_tmp, mtx_tmp, dist_tmp, rvecs_tmp, tvecs_tmp = cv2.calibrateCamera(objpoints, imgpoints, img_size, None, None)
+# '''
+
+#         c_cameracalibrate = timeit.Timer(stmt=c_camera_calibrate_code, setup=setup_c)
+#         min_c_cameracalibrate = min(c_cameracalibrate.repeat(repeat=10, number=1))
+
+#         python_cameracalibrate = timeit.Timer(stmt=python_camera_calibrate_code, setup=setup_python)
+#         min_python_cameracalibrate = min(python_cameracalibrate.repeat(repeat=10, number=1))
+
+#         with open("./performance/performance_generate_calibrate_matrix.txt", "w") as fin:
+#             fin.writelines(f"c++ generatecalibratematrix pybind11 to python utils takes {min_c_cameracalibrate} seconds\n")
+#             fin.writelines(f"python generatecalibratematrix takes {min_python_cameracalibrate} seconds\n")
+#             fin.writelines("c++ generatecalibratematrix speed-up over python generatecalibratematrix %g x\n" %(min_python_cameracalibrate/min_c_cameracalibrate))

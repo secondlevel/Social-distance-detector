@@ -29,7 +29,7 @@ void* calculate_multithread_grayvalue(void* args)
     pthread_exit(NULL); // exit child thread 
 }
 
-py::array_t<int> rgb2gray_multithread_c(py::array_t<int> img_rgb)
+py::array_t<int> rgb2gray2_multithread_c(py::array_t<int> img_rgb)
 {
     
     py::buffer_info buf1 = img_rgb.request();
@@ -268,19 +268,19 @@ class CameraCalibrate
                     cv::cornerSubPix(gray, corner_pts, cv::Size(11,11), cv::Size(-1,-1), criteria);
                     
                     // Displaying the detected corner points on the checker board        
-                    cv::drawChessboardCorners(frame, cv::Size(chessboard_cols, chessboard_rows), corner_pts, success);
+                    // cv::drawChessboardCorners(frame, cv::Size(chessboard_cols, chessboard_rows), corner_pts, success);
                     
                     objpoints.push_back(objp);      
                     imgpoints.push_back(corner_pts);
                 }
             }
 
-            cv::destroyAllWindows();
+            // cv::destroyAllWindows();
             cv::calibrateCamera(objpoints, imgpoints, cv::Size(gray.rows, gray.cols), cameraMatrix, distCoeffs, R, T);
 
         };
 
-        void ImageUndistort(std::string imagename)
+        py::array_t<unsigned char> ImageUndistort(std::string imagename)
         {   
             std::fstream foo;
             foo.open(imagename);
@@ -298,27 +298,29 @@ class CameraCalibrate
                 else
                 {
                     cv::undistort(originalimage, undistortimage, cameraMatrix, distCoeffs);
+                    return RGBMat2Numpy(undistortimage);
                 }
             }
         }
 
-        void ImageUndistort(cv::Mat imageMatrix)
+        py::array_t<unsigned char> ImageUndistort(py::array_t<unsigned char>& imageMatrix)
         {
-            if(imageMatrix.data)
+            if(imageMatrix.ndim()!=3)
             {
-                if(cameraMatrix.data && distCoeffs.data)
-                {
-                    originalimage = imageMatrix;
-                    cv::undistort(imageMatrix, undistortimage, cameraMatrix, distCoeffs);
-                }
-                else
-                {
-                    std::cout << "Please check that you have execute the GenerateCalibrateMatrix function." << std::endl;
-                }
+                throw std::runtime_error("Please ensure that image matrix has value.");
             }
             else
             {
-                std::cout << "Please ensure that image matrix has value." << std::endl;
+                if(!cameraMatrix.data || !distCoeffs.data)
+                {
+                    throw std::runtime_error("Please check that you have execute the GenerateCalibrateMatrix function.");
+                }
+                else
+                {
+                    originalimage = RGBNumpy2Mat(imageMatrix);
+                    cv::undistort(originalimage, undistortimage, cameraMatrix, distCoeffs);
+                    return RGBMat2Numpy(undistortimage);
+                }
             }
         }
 
@@ -334,6 +336,18 @@ class CameraCalibrate
             }
         }
 
+        void SaveImage(std::string saveimagename, py::array_t<unsigned char>& saveimage)
+        {
+            if(saveimage.ndim()!=3)
+            {
+                throw std::runtime_error("The image array does not exist.");
+            }
+            else
+            {
+                cv::imwrite(saveimagename, RGBNumpy2Mat(saveimage));
+            }
+        }
+
         void ShowCalibrateResult()
         {
             if(!originalimage.data || !undistortimage.data)
@@ -344,6 +358,19 @@ class CameraCalibrate
             {
                 cv::imshow("origin", originalimage);
                 cv::imshow("calibrate",undistortimage);
+                cv::waitKey(0);
+            }
+        }
+
+        void ShowImage(std::string windowsname, py::array_t<unsigned char>& showimage)
+        {
+            if(showimage.ndim()!=3 || showimage.ndim()!=2)
+            {
+                throw std::runtime_error("Please check that you have execute the ImageUndistort function successfully.");
+            }
+            else
+            {
+                cv::imshow(windowsname, RGBNumpy2Mat(showimage));
                 cv::waitKey(0);
             }
         }
@@ -412,17 +439,17 @@ class CameraCalibrate
             }
         }
 
-        py::array_t<unsigned char> GetUndistortImage()
-        {
-            if(!undistortimage.data)
-            {
-                throw std::runtime_error("Please check that you have execute the ImageUndistort function.");
-            }
-            else
-            {
-                return RGBMat2Numpy(undistortimage);
-            }
-        }
+        // py::array_t<unsigned char> GetUndistortImage()
+        // {
+        //     if(!undistortimage.data)
+        //     {
+        //         throw std::runtime_error("Please check that you have execute the ImageUndistort function.");
+        //     }
+        //     else
+        //     {
+        //         return RGBMat2Numpy(undistortimage);
+        //     }
+        // }
 
     private:
 
@@ -456,7 +483,7 @@ PYBIND11_MODULE(camera_calibrate_utils, m)
     m.doc() = "image process function";
     m.def("rgb2gray_c", &rgb2gray_c, "function to transform RGB to Gray(auto)");
     m.def("rgb2gray2_c", &rgb2gray2_c, "function to transform RGB to Gray(buffer info)");
-    m.def("rgb2gray2_multithread_c", &rgb2gray_multithread_c, "transform bgr to gray with multithread");
+    m.def("rgb2gray2_multithread_c", &rgb2gray2_multithread_c, "transform bgr to gray with multithread");
 
     // m.def("GrayNumpy2Mat", &GrayNumpy2Mat);
     // m.def("RGBNumpy2Mat", &RGBNumpy2Mat);
@@ -465,15 +492,17 @@ PYBIND11_MODULE(camera_calibrate_utils, m)
 
     py::class_<CameraCalibrate>(m, "CameraCalibrate")
         .def(py::init<int, int>())
+        .def("GetImageNumpy", &CameraCalibrate::GetImageNumpy)
         .def("GenerateCalibrateMatrix", &CameraCalibrate::GenerateCalibrateMatrix)
         .def("ImageUndistort", py::overload_cast<std::string>(&CameraCalibrate::ImageUndistort))
-        .def("ImageUndistort", py::overload_cast<cv::Mat>(&CameraCalibrate::ImageUndistort))
+        .def("ImageUndistort", py::overload_cast<py::array_t<unsigned char>&>(&CameraCalibrate::ImageUndistort))
         .def("SaveUndistortedImage", &CameraCalibrate::SaveUndistortedImage)
+        .def("SaveImage", &CameraCalibrate::SaveImage)
         .def("ShowCalibrateResult", &CameraCalibrate::ShowCalibrateResult)
+        .def("ShowImage", &CameraCalibrate::ShowImage)
         .def("GetCameraMatrix", &CameraCalibrate::GetCameraMatrix)
         .def("GetDistCoeffs", &CameraCalibrate::GetDistCoeffs)
         .def("GetRotationVector", &CameraCalibrate::GetRotationVector)
-        .def("GetTranslationVector", &CameraCalibrate::GetTranslationVector)
-        .def("GetImageNumpy", &CameraCalibrate::GetImageNumpy)
-        .def("GetUndistortImage", &CameraCalibrate::GetUndistortImage);
+        .def("GetTranslationVector", &CameraCalibrate::GetTranslationVector);
+        // .def("GetUndistortImage", &CameraCalibrate::GetUndistortImage);
 }
