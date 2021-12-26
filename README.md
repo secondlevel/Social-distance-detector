@@ -12,11 +12,11 @@ In recent years, there are more and more deep learning methods to obtain the coo
 
 <p float="center">
   
-  <img src="md_image/camera_calibration_normal.png" width="250" title="Normal image" hspace="30" />
+  <img src="md_image/camera_calibration_normal.png" width="250" title="Normal image" hspace="20" />
   
-  <img src="md_image/camera_calibration_positive.png" width="280" title="Positive radial image" hspace="30" />
+  <img src="md_image/camera_calibration_positive.png" width="280" title="Positive radial image" hspace="20" />
   
-  <img src="md_image/camera_calibration_negative.png" width="230" title="Negative radial image" hspace="30" /> 
+  <img src="md_image/camera_calibration_negative.png" width="230" title="Negative radial image" hspace="20" /> 
   
 </p>
 
