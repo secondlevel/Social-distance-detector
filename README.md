@@ -16,7 +16,7 @@ In recent years, there are more and more deep learning methods to obtain the coo
   
   <img src="md_image/camera_calibration_positive.png" width="280" title="Positive radial image" hspace="30" />
   
-  <img src="md_image/camera_calibration_negative.png" width="240" title="Negative radial image" hspace="31" /> 
+  <img src="md_image/camera_calibration_negative.png" width="230" title="Negative radial image" hspace="30" /> 
   
 </p>
 
@@ -82,9 +82,9 @@ Check the size of the chessboard you want to use and declare the constructor.
 
 <p float="center">
   
-  <img src="md_image/origin.jpg" width="400" title="original image" hspace="30" />
+  <img src="md_image/origin.jpg" width="400" title="original image" hspace="25" />
   
-  <img src="md_image/result.jpg" width="400" title="undistorted result" hspace="30" />
+  <img src="md_image/result.jpg" width="400" title="undistorted result" hspace="25" />
   
 </p>
 
