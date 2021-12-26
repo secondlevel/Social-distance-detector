@@ -45,7 +45,7 @@ This tool is for those who need to calculate the distance in the picture and und
 
 ## System Architecture
 
-<img src="md_image/architecture.png" width="170" title="System Architecture" hspace="400" />
+<img src="md_image/architecture.png" width="170" title="System Architecture" hspace="370" />
 
 ## API Description
 
@@ -82,9 +82,9 @@ Check the size of the chessboard you want to use and declare the constructor.
 
 <p float="center">
   
-  <img src="md_image/origin.jpg" width="300" title="original image" hspace="30" />
+  <img src="md_image/origin.jpg" width="350" title="original image" hspace="30" />
   
-  <img src="md_image/result.jpg" width="300" title="undistorted result" hspace="30" />
+  <img src="md_image/result.jpg" width="350" title="undistorted result" hspace="30" />
   
 </p>
 
