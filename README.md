@@ -45,7 +45,7 @@ This tool is for those who need to calculate the distance in the picture and und
 
 ## System Architecture
 
-<img src="https://github.com/secondlevel/nsdhw_21au/blob/secondlevel-proposal-submission/proposal/secondlevel/img/System_Architecture.jpg" width="850" title="System Architecture" hspace="80" />
+<img src="md_image/architecture.png" width="170" title="System Architecture" hspace="400" />
 
 ## API Description
 
