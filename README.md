@@ -161,8 +161,9 @@ This project will be completed by executing the following steps:
 
 ### Run System Method
 
-step1. Prepare the directory that contain a sequence of image (ex: "image" directory).
+step1. Prepare the directory that contain a sequence of image 
 
+ex: [image directory](https://github.com/secondlevel/Social-distance-detector/tree/main/image directory)
 
 step2. clean up all the unnecessary file or directory.
 
