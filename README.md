@@ -53,32 +53,32 @@ This tool is for those who need to calculate the distance in the picture and und
 
 Check the size of the chessboard you want to use and declare the constructor.  
 
-- calibrator = CameraCalibrate(7,7)
+```calibrator = CameraCalibrate(7,7)```
 
 **GetImageNumpy()** - Read an image name and return the image numpy array.
 
-- image_array = calibrator.GetImageNumpy("image/1.jpg")
+```image_array = calibrator.GetImageNumpy("image/1.jpg")```
 
 **GenerateCalibrateMatrix()** - Read a directory name(stored some image that named xxx.jpg) and generate the rotation vector, translation vector, intrinsic matrix, and distorted coefficient,.etc. 
 
-- calibrator.GenerateCalibrateMatrix("image")
+```calibrator.GenerateCalibrateMatrix("image")```
 
 **ImageUndistort()** - Read an image name or image array and return the undistorted image numpy array.
 
-- undistorted_image_array1 = calibrator.ImageUndistort("image/1.jpg")  
-- undistorted_image_array2 = calibrator.ImageUndistort(image_array)
+```undistorted_image_array1 = calibrator.ImageUndistort("image/1.jpg")```   
+```undistorted_image_array2 = calibrator.ImageUndistort(image_array)```
 
 **SaveUndistortedImage()** - Read the name of the image you want to save. It will save the image array to the system, such as our undistorted_image_array1 or undistorted_image_array2.
 
-- calibrator.SaveUndistortedImage("result.jpg")
+```calibrator.SaveUndistortedImage("result.jpg")```
 
 **SaveImage()** - Read the save name and the image numpy array. It will save this array to the system.
 
-- calibrator.SaveImage("myresult.jpg", undistorted_image_array1)    
+```calibrator.SaveImage("myresult.jpg", undistorted_image_array1)```    
 
 **ShowCalibrateResult()** - It will display both the last read image and last undistorted image, as shown in the following.
 
-- calibrator.ShowCalibrateResult()  
+```calibrator.ShowCalibrateResult()```  
 
 <p float="center">
   
@@ -90,22 +90,22 @@ Check the size of the chessboard you want to use and declare the constructor.
 
 **ShowImage()** - Read the window name and image numpy array you want to show.
 
-- calibrator.ShowImage("result_window", undistorted_image_array1) 
+```calibrator.ShowImage("result_window", undistorted_image_array1)```
 
 ### additional function
 
 
 **rgb2gray_c()** - Read the array of image and return the array of gray images. There using the py::array_t to implement the method.
 
-- gray_image_array = rgb2gray_c(image_array)
+```gray_image_array = rgb2gray_c(image_array)```
 
 **rgb2gray2_c()** - Read the array of image and return the array of gray images. There using the bufferinfo to get the value of py::array_t.
 
-- gray_image_array = rgb2gray2_c(image_array)
+```gray_image_array = rgb2gray2_c(image_array)```
 
 **rgb2gray2_multithread_c()** - Read the array of image and return the array of gray images. There using the bufferinfo to get the value py::array_t, and through the multithread to implement the method.
 
-- gray_image_array = rgb2gray2_multithread_c(image_array)
+```gray_image_array = rgb2gray2_multithread_c(image_array)```
 
 ## Engineering Infrastructure
 
