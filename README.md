@@ -184,7 +184,9 @@ make test
 
 In the project, It's using the opencv function to test my project result. Testing content are as following.
 
-
+- #### Convert BGR to GRAY in different numbers of image.
+ 
+<img src="md_image/BGR2GRAY_performance.jpg" width="550" title="performance" hspace="150" />
 
 ## Schedule
 
