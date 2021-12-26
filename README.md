@@ -82,9 +82,9 @@ Check the size of the chessboard you want to use and declare the constructor.
 
 <p float="center">
   
-  <img src="md_image/origin.jpg" width="400" title="original image" hspace="25" />
+  <img src="md_image/origin.jpg" width="400" title="original image" hspace="30" />
   
-  <img src="md_image/result.jpg" width="400" title="undistorted result" hspace="25" />
+  <img src="md_image/result.jpg" width="400" title="undistorted result" hspace="30" />
   
 </p>
 
