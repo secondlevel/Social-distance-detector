@@ -1,4 +1,4 @@
-# Social distance detector
+# Camera Calibrator
 
  ===========================
 ## Basic Information
