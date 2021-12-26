@@ -106,6 +106,30 @@ calibrator.ShowCalibrateResult()
 calibrator.ShowImage("result_window", undistorted_image_array1)
 ```
 
+**GetCameraMatrix** - Get the intrinsic matrix that can be utilize in the python opencv.
+
+```python=
+calibrator.GetCameraMatrix()
+```
+
+**GetDistCoeffs** - Get the distorted coefficient that can be utilize in the python opencv.
+
+```python=
+calibrator.GetDistCoeffs()
+```
+
+**GetRotationVector** - Get the Rotation Vector that can be utilize in the python opencv.
+
+```python=
+calibrator.GetRotationVector()
+```
+
+**GetTranslationVector** - Get the Translation Vector that can be utilize in the python opencv.
+
+```python=
+calibrator.GetTranslationVector()
+```
+
 ### Additional function
 
 
