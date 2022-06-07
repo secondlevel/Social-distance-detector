@@ -1,6 +1,5 @@
 # Camera Calibrator
 
- ====================================================
 ## Basic Information
 
 **Github repository**: https://github.com/secondlevel/Social-distance-detector
