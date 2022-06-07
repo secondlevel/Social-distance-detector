@@ -41,7 +41,7 @@ This tool is for those who need to calculate the distance in the picture and und
 
 ## System Architecture
 
-<img src="md_image/architecture.png" width="170" title="System Architecture" hspace="400" />
+<img src="md_image/architecture.png" width="170" title="System Architecture" hspace="380" />
 
 ## API Description
 
