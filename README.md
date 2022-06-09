@@ -4,7 +4,7 @@
 
 **Github repository**: https://github.com/secondlevel/Social-distance-detector
 
-T
+The detailed desctiption can be found at https://github.com/secondlevel/Social-distance-detector/blob/main/presentation.pdf.
 
 ## Problem to Solve
 
